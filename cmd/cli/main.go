@@ -8,8 +8,10 @@ import (
 	"sync"
 	"time"
 
-	fl "github.com/dema501/WidgetsProdCons/internal/pkg/flag"
-	"github.com/dema501/WidgetsProdCons/internal/pkg/types"
+	"github.com/dema501/AwesomeWidgetsGolang/internal/pkg/consumer"
+	fl "github.com/dema501/AwesomeWidgetsGolang/internal/pkg/flag"
+	"github.com/dema501/AwesomeWidgetsGolang/internal/pkg/producer"
+	"github.com/dema501/AwesomeWidgetsGolang/internal/pkg/types"
 	"github.com/pkg/errors"
 )
 
@@ -93,9 +95,8 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	// dataCh is windget channel
-	// with buffer equals cfg.ProducersCount*cfg.WidgetsCount
-	dataCh := make(chan types.Widget, cfg.ProducersCount*cfg.WidgetsCount)
+	// dataCh is widget channel
+	dataCh := make(chan *types.Widget, cfg.ProducersCount)
 
 	// stopCh is an additional signal channel.
 	// Its sender is the moderator goroutine shown below.
@@ -111,7 +112,7 @@ func main() {
 
 	// senders
 	for i := 0; i < cfg.ProducersCount; i++ {
-		p := types.NewProducer(i)
+		p := producer.NewProducer(i)
 		go p.Produce(cfg.WidgetsCount, cfg.BrokenWidgetsCount, dataCh)
 	}
 
@@ -122,7 +123,7 @@ func main() {
 	wgConsumers.Add(cfg.ConsumersCount)
 
 	for i := 0; i < cfg.ConsumersCount; i++ {
-		c := types.NewConsumer(i)
+		c := consumer.NewConsumer(i)
 		//c.Consume will decrease wgConsumers on defer
 		go c.Consume(dataCh, stopCh, toStop, &wgConsumers)
 	}

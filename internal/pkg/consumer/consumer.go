@@ -1,9 +1,11 @@
-package types
+package consumer
 
 import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/dema501/AwesomeWidgetsGolang/internal/pkg/types"
 )
 
 // Consumer knows how to consume
@@ -21,7 +23,7 @@ func NewConsumer(id int) *Consumer {
 }
 
 // Consume method
-func (c *Consumer) Consume(dataCh <-chan Widget, stopCh chan bool, toStopCh chan string, wg *sync.WaitGroup) {
+func (c *Consumer) Consume(dataCh <-chan *types.Widget, stopCh chan bool, toStopCh chan string, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -41,7 +43,7 @@ func (c *Consumer) Consume(dataCh <-chan Widget, stopCh chan bool, toStopCh chan
 		// ok will be false if dataCh has been closed
 		case w, ok := <-dataCh:
 			if ok {
-				fmt.Printf("%v consumes [%v] in %v time\n", c.ID, w, time.Since(w.createdAt))
+				fmt.Printf("%v consumes [%v] in %v time\n", c.ID, w, time.Since(w.CreatedAt))
 				toStopCh <- c.ID
 				continue
 			} else {

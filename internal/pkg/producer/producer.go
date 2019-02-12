@@ -1,9 +1,11 @@
-package types
+package producer
 
 import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/dema501/AwesomeWidgetsGolang/internal/pkg/types"
 )
 
 // Producer can produce
@@ -21,7 +23,7 @@ func NewProducer(id int) *Producer {
 }
 
 // Produce implement interface
-func (p *Producer) Produce(produceCount, brokenCount int, dataCh chan<- Widget) error {
+func (p *Producer) Produce(produceCount, brokenCount int, dataCh chan<- *types.Widget) error {
 	var brokenPositions map[int]bool
 
 	if brokenCount > 0 {
@@ -33,7 +35,7 @@ func (p *Producer) Produce(produceCount, brokenCount int, dataCh chan<- Widget) 
 		if !ok {
 			broken = false
 		}
-		dataCh <- NewWidget(p.ID, broken)
+		dataCh <- types.NewWidget(p.ID, broken)
 	}
 	return nil
 }

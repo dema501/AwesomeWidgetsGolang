@@ -1,11 +1,13 @@
-package types
+package producer
 
 import (
 	"testing"
+
+	"github.com/dema501/AwesomeWidgetsGolang/internal/pkg/types"
 )
 
 func TestProduce(t *testing.T) {
-	dataCh := make(chan Widget, 8)
+	dataCh := make(chan *types.Widget, 8)
 
 	p := NewProducer(1)
 	p.Produce(4, 4, dataCh)
@@ -17,7 +19,7 @@ func TestProduce(t *testing.T) {
 	}
 
 	for elem := range dataCh {
-		if elem.broken != true {
+		if elem.Broken != true {
 			t.Error("expected broken widget;", elem)
 		}
 	}
